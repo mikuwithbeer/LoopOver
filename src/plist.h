@@ -11,7 +11,9 @@ typedef struct {
 
 plist_manager_t *plist_manager_new(void);
 
-bool plist_manager_find_path(plist_manager_t *manager);
+bool plist_manager_prepare(plist_manager_t *manager);
+
+bool plist_manager_load(plist_manager_t *manager);
 
 void plist_manager_free(plist_manager_t *manager);
 

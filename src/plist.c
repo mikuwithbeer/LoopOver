@@ -5,7 +5,7 @@ plist_manager_t *plist_manager_new(void) {
     return manager;
 }
 
-bool plist_manager_find_path(plist_manager_t *manager) {
+bool plist_manager_prepare(plist_manager_t *manager) {
     constexpr int PATH_MAX_SIZE = 1024;
     char raw_path[PATH_MAX_SIZE] = {};
 
@@ -21,6 +21,41 @@ bool plist_manager_find_path(plist_manager_t *manager) {
 
     manager->url = file_url;
     CFRelease(file_path);
+
+    return true;
+}
+
+bool plist_manager_load(plist_manager_t *manager) {
+    SInt32 error_code = 0;
+    const bool status = CFURLCreateDataAndPropertiesFromResource(
+        kCFAllocatorDefault,
+        manager->url,
+        &manager->resource,
+        nullptr,
+        nullptr,
+        &error_code
+    );
+
+    if (!status || manager->resource == nullptr) {
+        if (manager->url) {
+            CFRelease(manager->url);
+        }
+
+        return false;
+    }
+
+    CFErrorRef error = nullptr;
+    manager->properties = CFPropertyListCreateWithData(
+        kCFAllocatorDefault,
+        manager->resource,
+        kCFPropertyListMutableContainersAndLeaves,
+        nullptr,
+        &error
+    );
+
+    if (error != nullptr) {
+        return false;
+    }
 
     return true;
 }
