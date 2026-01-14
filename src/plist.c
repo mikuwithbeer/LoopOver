@@ -60,6 +60,39 @@ bool plist_manager_load(plist_manager_t *manager) {
     return true;
 }
 
+bool plist_manager_modify(plist_manager_t *manager) {
+    const auto now = CFAbsoluteTimeGetCurrent();
+    const auto date = CFDateCreate(nullptr, now);
+    const auto key = CFSTR("FirstRunDate");
+
+    CFDictionarySetValue(manager->properties, key, date);
+    CFRelease(date);
+
+    CFErrorRef error = nullptr;
+    const auto output = CFPropertyListCreateData(
+        kCFAllocatorDefault,
+        manager->properties,
+        kCFPropertyListXMLFormat_v1_0,
+        0,
+        &error
+    );
+
+    if (error != nullptr) {
+        return false;
+    }
+
+    SInt32 error_code = 0;
+    const bool status = CFURLWriteDataAndPropertiesToResource(
+        manager->url,
+        output,
+        nullptr,
+        &error_code
+    );
+
+    CFRelease(output);
+    return status;
+}
+
 void plist_manager_free(plist_manager_t *manager) {
     CFRelease(manager->resource);
     CFRelease(manager->properties);
