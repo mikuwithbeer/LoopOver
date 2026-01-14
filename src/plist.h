@@ -15,7 +15,7 @@ bool plist_manager_prepare(plist_manager_t *manager);
 
 bool plist_manager_load(plist_manager_t *manager);
 
-bool plist_manager_modify(plist_manager_t *manager);
+bool plist_manager_modify(const plist_manager_t *manager);
 
 void plist_manager_free(plist_manager_t *manager);
 

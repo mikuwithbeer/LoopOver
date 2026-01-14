@@ -6,15 +6,14 @@ plist_manager_t *plist_manager_new(void) {
 }
 
 bool plist_manager_prepare(plist_manager_t *manager) {
-    constexpr int PATH_MAX_SIZE = 1024;
-    char raw_path[PATH_MAX_SIZE] = {};
+    char raw_path[PATH_MAX] = {};
 
     const auto home = getenv("HOME");
     if (home == nullptr) {
         return false;
     }
 
-    snprintf(raw_path, PATH_MAX_SIZE, "%s/Library/Preferences/com.codeweavers.CrossOver.plist", home);
+    snprintf(raw_path, PATH_MAX, "%s/Library/Preferences/com.codeweavers.CrossOver.plist", home);
 
     const auto file_path = CFStringCreateWithCString(kCFAllocatorDefault, raw_path, kCFStringEncodingUTF8);
     const auto file_url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, file_path, kCFURLPOSIXPathStyle, false);
@@ -60,7 +59,7 @@ bool plist_manager_load(plist_manager_t *manager) {
     return true;
 }
 
-bool plist_manager_modify(plist_manager_t *manager) {
+bool plist_manager_modify(const plist_manager_t *manager) {
     const auto now = CFAbsoluteTimeGetCurrent();
     const auto date = CFDateCreate(nullptr, now);
     const auto key = CFSTR("FirstRunDate");
@@ -94,9 +93,19 @@ bool plist_manager_modify(plist_manager_t *manager) {
 }
 
 void plist_manager_free(plist_manager_t *manager) {
-    CFRelease(manager->resource);
-    CFRelease(manager->properties);
-    CFRelease(manager->url);
+    if (manager->resource != nullptr) {
+        CFRelease(manager->resource);
+    }
 
-    free(manager);
+    if (manager->properties != nullptr) {
+        CFRelease(manager->properties);
+    }
+
+    if (manager->url != nullptr) {
+        CFRelease(manager->url);
+    }
+
+    if (manager != nullptr) {
+        free(manager);
+    }
 }
