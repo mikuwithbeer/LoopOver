@@ -1,9 +1,60 @@
 #include "bottle.h"
 
-#include <sys/syslimits.h>
-
+constexpr int BUFFER_SIZE = 4096;
+constexpr int LINES_TO_REMOVE = 5;
+const char *TARGET_PREFIX = "[Software\\\\CodeWeavers\\\\CrossOver\\\\cxoffice]";
 
 bool bottle_modify(const char *path) {
+    const auto file = fopen(path, "r");
+    if (file == nullptr) {
+        return false;
+    }
+
+    char temp_path[PATH_MAX];
+    snprintf(temp_path, sizeof(temp_path), "%s.tmp", path);
+
+    const auto temp_file = fopen(temp_path, "w");
+    if (temp_file == nullptr) {
+        fclose(file);
+        return false;
+    }
+
+    auto line_found = false;
+    auto skip_lines = 0;
+
+    char buffer[BUFFER_SIZE];
+    while (fgets(buffer, BUFFER_SIZE, file)) {
+        if (skip_lines > 0) {
+            skip_lines--;
+            continue;
+        }
+
+        const char *result = strstr(buffer, TARGET_PREFIX);
+        if (result != nullptr) {
+            skip_lines = LINES_TO_REMOVE;
+            line_found = true;
+            continue;
+        }
+
+        fputs(buffer, temp_file);
+    }
+
+    fclose(file);
+    fclose(temp_file);
+
+    if (line_found) {
+        if (remove(path) != 0) {
+            return false;
+        }
+
+        if (rename(temp_path, path) != 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    remove(temp_path);
     return true;
 }
 
@@ -34,7 +85,10 @@ bool bottle_list(const bottle_modify_callback_t callback) {
         char reg_path[PATH_MAX];
         snprintf(reg_path, sizeof(reg_path), "%s/%s/system.reg", bottles_path, entry->d_name);
 
-        callback(reg_path);
+        if (callback(reg_path) == false) {
+            closedir(dir);
+            return false;
+        }
     }
 
     closedir(dir);

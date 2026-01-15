@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include <sys/syslimits.h>
 
 typedef bool (*bottle_modify_callback_t)(const char *path);
 

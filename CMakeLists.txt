@@ -9,12 +9,12 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 # Add files
-add_executable(LoopOver src/main.c
-    src/bottle.c
-    src/bottle.h)
+add_executable(LoopOver src/main.c)
 target_sources(LoopOver PRIVATE
     src/plist.c
     src/plist.h
+    src/bottle.c
+    src/bottle.h
 )
 
 # Link CoreFoundation

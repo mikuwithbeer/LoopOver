@@ -11,6 +11,9 @@
 
 #define SUCCESS_TEXT "Modified the state successfully!"
 
+#define SUCCESS_BOTTLE "Patched the bottles successfully!"
+#define BOTTLE_ERROR "Failed patching the bottle :("
+
 #define RUN_SAFELY(callback, start_msg, error_msg) \
     do { \
         puts(start_msg); \
@@ -21,9 +24,9 @@
         } \
     } while (0)
 
-bool lol(const char *path) {
-    printf("lmao %s\n", path);
-    return true;
+bool modify_handler(const char *path) {
+    printf("Patching %s...\n", path);
+    return bottle_modify(path);
 }
 
 int main(void) {
@@ -36,7 +39,11 @@ int main(void) {
     puts(SUCCESS_TEXT);
     plist_manager_free(manager);
 
-    bottle_list(lol);
+    if (bottle_list(modify_handler)) {
+        puts(SUCCESS_BOTTLE);
+    } else {
+        puts(BOTTLE_ERROR);
+    }
 
     return 0;
 }
