@@ -60,8 +60,8 @@ bool plist_manager_load(plist_manager_t *manager) {
 }
 
 bool plist_manager_modify(const plist_manager_t *manager) {
-    const auto now = CFAbsoluteTimeGetCurrent();
-    const auto date = CFDateCreate(nullptr, now);
+    const auto yesterday = CFAbsoluteTimeGetCurrent() - 86400.0;
+    const auto date = CFDateCreate(nullptr, yesterday);
     const auto key = CFSTR("FirstRunDate");
 
     CFDictionarySetValue(manager->properties, key, date);
