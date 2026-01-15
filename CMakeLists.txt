@@ -9,7 +9,9 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 # Add files
-add_executable(LoopOver src/main.c)
+add_executable(LoopOver src/main.c
+    src/bottle.c
+    src/bottle.h)
 target_sources(LoopOver PRIVATE
     src/plist.c
     src/plist.h

@@ -1,4 +1,5 @@
 #include "plist.h"
+#include "bottle.h"
 
 #define PREPARE_TEXT "Preparing the state..."
 #define LOAD_TEXT "Loading the state..."
@@ -8,7 +9,7 @@
 #define LOAD_ERROR "Failed to load the state :("
 #define MODIFY_ERROR "Failed to modify the state :("
 
-#define SUCCESS_TEXT "Applied the patch successfully!"
+#define SUCCESS_TEXT "Modified the state successfully!"
 
 #define RUN_SAFELY(callback, start_msg, error_msg) \
     do { \
@@ -20,6 +21,11 @@
         } \
     } while (0)
 
+bool lol(const char *path) {
+    printf("lmao %s\n", path);
+    return true;
+}
+
 int main(void) {
     plist_manager_t *manager = plist_manager_new();
 
@@ -29,6 +35,8 @@ int main(void) {
 
     puts(SUCCESS_TEXT);
     plist_manager_free(manager);
+
+    bottle_list(lol);
 
     return 0;
 }
