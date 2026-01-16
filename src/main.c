@@ -24,12 +24,27 @@
         } \
     } while (0)
 
+bool warn_user(void) {
+    puts("Please close the application if running.");
+    puts("This tool will modify application files.");
+    puts("Are you sure you want to proceed? [y/n]");
+
+    char answer;
+    scanf("%c", &answer);
+
+    return answer == 'y' || answer == 'Y';
+}
+
 bool modify_handler(const char *path) {
     printf("Patching %s...\n", path);
     return bottle_modify(path);
 }
 
 int main(void) {
+    if (warn_user() == false) {
+        return 0;
+    }
+
     plist_manager_t *manager = plist_manager_new();
 
     RUN_SAFELY(plist_manager_prepare, PREPARE_TEXT, PREPARE_ERROR);

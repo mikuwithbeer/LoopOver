@@ -53,7 +53,7 @@ bool bottle_modify(const char *path) {
     } else {
         remove(temp_path);
     }
-    
+
     return true;
 }
 
