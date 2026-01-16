@@ -50,11 +50,10 @@ bool bottle_modify(const char *path) {
         if (rename(temp_path, path) != 0) {
             return false;
         }
-
-        return true;
+    } else {
+        remove(temp_path);
     }
-
-    remove(temp_path);
+    
     return true;
 }
 
@@ -67,17 +66,13 @@ bool bottle_list(const bottle_modify_callback_t callback) {
     char bottles_path[PATH_MAX];
     snprintf(bottles_path, sizeof(bottles_path), "%s/Library/Application Support/CrossOver/Bottles", home);
 
-    DIR *dir = opendir(bottles_path);
+    const auto dir = opendir(bottles_path);
     if (dir == nullptr) {
         return false;
     }
 
     struct dirent *entry;
     while ((entry = readdir(dir)) != nullptr) {
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
-            continue;
-        }
-
         if (entry->d_name[0] == '.') {
             continue;
         }

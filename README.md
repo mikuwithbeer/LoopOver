@@ -1,5 +1,10 @@
 ## LoopOver
 
+![License](https://img.shields.io/badge/license-MIT-red.svg)
+![Platform](https://img.shields.io/badge/platform-macOS-green.svg)
+![Language](https://img.shields.io/badge/language-C-blue.svg)
+
+
 > [!CAUTION]
 > **Disclaimer**
 >
