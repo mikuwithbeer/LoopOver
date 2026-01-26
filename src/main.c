@@ -26,7 +26,7 @@ int main(void) {
     return 0;
 }
 
-[[nodiscard]] bool get_confirmation(void) {
+bool get_confirmation(void) {
     puts("Please close the application if running.");
     puts("This tool will modify application files.");
     puts("Are you sure you want to proceed? [y/n]");
@@ -37,7 +37,7 @@ int main(void) {
     return answer == 'y' || answer == 'Y';
 }
 
-[[nodiscard]] bool handle_modify(const char *path) {
+bool handle_modify(const char *path) {
     printf("Patching %s...\n", path);
     return bottle_modify(path);
 }
