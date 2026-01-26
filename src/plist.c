@@ -1,17 +1,14 @@
 #include "plist.h"
 
 plist_manager_t *plist_manager_new(void) {
-    plist_manager_t *manager = calloc(1, sizeof(plist_manager_t));
-    return manager;
+    return calloc(1, sizeof(plist_manager_t));
 }
 
 bool plist_manager_prepare(plist_manager_t *manager) {
     char raw_path[PATH_MAX] = {};
 
     const auto home = getenv("HOME");
-    if (home == nullptr) {
-        return false;
-    }
+    if (home == nullptr) return false;
 
     snprintf(raw_path, PATH_MAX, "%s/Library/Preferences/com.codeweavers.CrossOver.plist", home);
 
@@ -52,15 +49,11 @@ bool plist_manager_load(plist_manager_t *manager) {
         &error
     );
 
-    if (error != nullptr) {
-        return false;
-    }
-
-    return true;
+    return error == nullptr;
 }
 
 bool plist_manager_modify(const plist_manager_t *manager) {
-    const auto yesterday = CFAbsoluteTimeGetCurrent() - 86400.0;
+    const auto yesterday = CFAbsoluteTimeGetCurrent() - 86'400.0;
     const auto date = CFDateCreate(nullptr, yesterday);
     const auto key = CFSTR("FirstRunDate");
 
@@ -76,9 +69,7 @@ bool plist_manager_modify(const plist_manager_t *manager) {
         &error
     );
 
-    if (error != nullptr) {
-        return false;
-    }
+    if (error != nullptr) return false;
 
     SInt32 error_code = 0;
     const bool status = CFURLWriteDataAndPropertiesToResource(
@@ -93,19 +84,11 @@ bool plist_manager_modify(const plist_manager_t *manager) {
 }
 
 void plist_manager_free(plist_manager_t *manager) {
-    if (manager->resource != nullptr) {
-        CFRelease(manager->resource);
-    }
+    if (manager == nullptr) return;
 
-    if (manager->properties != nullptr) {
-        CFRelease(manager->properties);
-    }
+    if (manager->resource != nullptr) CFRelease(manager->resource);
+    if (manager->properties != nullptr) CFRelease(manager->properties);
+    if (manager->url != nullptr) CFRelease(manager->url);
 
-    if (manager->url != nullptr) {
-        CFRelease(manager->url);
-    }
-
-    if (manager != nullptr) {
-        free(manager);
-    }
+    free(manager);
 }

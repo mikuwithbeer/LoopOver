@@ -20,14 +20,16 @@ thus refreshing the trial cycle.
 
 ### Requirements
 
-- macOS
+- macOS `v10.15` or later.
 - CrossOver must be installed in its default location.
 - Building the project since pre-built binaries will not be released.
+    - C23 (using `clang` as preferred compiler).
+    - CMake `v4.2` or later.
 
 ### Usage
 
-After compiling the project and obtaining the binary,
-you can run the executable whenever your trial expires.
+After compiling the project and getting the binary, you can run the executable
+whenever your trial expires.
 
 ### License
 

@@ -1,30 +1,32 @@
 #include "plist.h"
+#include "main.h"
 #include "bottle.h"
 
-#define PREPARE_TEXT "Preparing the state..."
-#define LOAD_TEXT "Loading the state..."
-#define MODIFY_TEXT "Modifying the state..."
+static bool execute_step(bool callback, const char *info, const char *error);
 
-#define PREPARE_ERROR "Failed to prepare the state :("
-#define LOAD_ERROR "Failed to load the state :("
-#define MODIFY_ERROR "Failed to modify the state :("
+int main(void) {
+    if (!get_confirmation()) return 0;
 
-#define SUCCESS_TEXT "Modified the state successfully!"
+    plist_manager_t *manager = plist_manager_new();
+    const auto result = execute_step(plist_manager_prepare(manager), LOOPOVER_PREPARE_TEXT, LOOPOVER_PREPARE_ERROR) &&
+                        execute_step(plist_manager_load(manager), LOOPOVER_LOAD_TEXT, LOOPOVER_LOAD_ERROR) &&
+                        execute_step(plist_manager_modify(manager), LOOPOVER_MODIFY_TEXT, LOOPOVER_MODIFY_ERROR);
 
-#define SUCCESS_BOTTLE "Patched the bottles successfully!"
-#define BOTTLE_ERROR "Failed patching the bottle :("
+    plist_manager_free(manager);
+    if (!result) return 1;
 
-#define RUN_SAFELY(callback, start_msg, error_msg) \
-    do { \
-        puts(start_msg); \
-        if (callback(manager) == false) { \
-            puts(error_msg); \
-            plist_manager_free(manager); \
-            return 1; \
-        } \
-    } while (0)
+    puts(LOOPOVER_SUCCESS_TEXT);
 
-bool warn_user(void) {
+    if (!bottle_list(handle_modify)) {
+        puts(LOOPOVER_BOTTLE_ERROR);
+        return 1;
+    }
+
+    puts(LOOPOVER_SUCCESS_BOTTLE);
+    return 0;
+}
+
+[[nodiscard]] bool get_confirmation(void) {
     puts("Please close the application if running.");
     puts("This tool will modify application files.");
     puts("Are you sure you want to proceed? [y/n]");
@@ -35,30 +37,17 @@ bool warn_user(void) {
     return answer == 'y' || answer == 'Y';
 }
 
-bool modify_handler(const char *path) {
+[[nodiscard]] bool handle_modify(const char *path) {
     printf("Patching %s...\n", path);
     return bottle_modify(path);
 }
 
-int main(void) {
-    if (warn_user() == false) {
-        return 0;
+static bool execute_step(const bool callback, const char *info, const char *error) {
+    puts(info);
+
+    if (!callback) {
+        puts(error);
     }
 
-    plist_manager_t *manager = plist_manager_new();
-
-    RUN_SAFELY(plist_manager_prepare, PREPARE_TEXT, PREPARE_ERROR);
-    RUN_SAFELY(plist_manager_load, LOAD_TEXT, LOAD_ERROR);
-    RUN_SAFELY(plist_manager_modify, MODIFY_TEXT, MODIFY_ERROR);
-
-    puts(SUCCESS_TEXT);
-    plist_manager_free(manager);
-
-    if (bottle_list(modify_handler)) {
-        puts(SUCCESS_BOTTLE);
-    } else {
-        puts(BOTTLE_ERROR);
-    }
-
-    return 0;
+    return callback;
 }
