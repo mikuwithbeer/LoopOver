@@ -6,7 +6,7 @@
 #include <dirent.h>
 
 constexpr int PATH_MAX = 1024;
-constexpr int BUFFER_SIZE = PATH_MAX * 4;
+constexpr int BUFFER_SIZE = PATH_MAX << 2;
 constexpr int LINES_TO_REMOVE = 5;
 
 constexpr char TARGET_PREFIX[] = "[Software\\\\CodeWeavers\\\\CrossOver\\\\cxoffice]";
@@ -15,7 +15,7 @@ bool bottle_modify(const char *path) {
     const auto file = fopen(path, "r");
     if (file == nullptr) return false;
 
-    char temp_path[PATH_MAX];
+    char temp_path[PATH_MAX] = {};
     snprintf(temp_path, sizeof(temp_path), "%s.tmp", path);
 
     const auto temp_file = fopen(temp_path, "w");
@@ -27,18 +27,17 @@ bool bottle_modify(const char *path) {
     auto line_found = false;
     auto skip_lines = 0;
 
-    char buffer[BUFFER_SIZE];
+    char buffer[BUFFER_SIZE] = {};
     while (fgets(buffer, BUFFER_SIZE, file)) {
-        if (skip_lines > 0) {
+        if (skip_lines > 0) [[clang::unlikely]] {
             skip_lines--;
             continue;
         }
 
         const auto result = strstr(buffer, TARGET_PREFIX);
-        if (result != nullptr) {
+        if (result != nullptr) [[clang::unlikely]] {
             skip_lines = LINES_TO_REMOVE;
             line_found = true;
-
             continue;
         }
 

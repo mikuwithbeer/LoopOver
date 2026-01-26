@@ -27,9 +27,9 @@ int main(void) {
 }
 
 bool get_confirmation(void) {
-    puts("Please close the application if running.");
-    puts("This tool will modify application files.");
-    puts("Are you sure you want to proceed? [y/n]");
+    printf("Please close the application if running.\n");
+    printf("This tool will modify application files.\n");
+    printf("Are you sure you want to proceed? [y/n]: ");
 
     char answer;
     scanf("%c", &answer);

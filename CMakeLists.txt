@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 4.2)
 project(LoopOver
-    VERSION 0.2.0
+    VERSION 0.2.1
     LANGUAGES C)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_C_FLAGS_RELEASE "-O3")
 
 file(GLOB SOURCES "src/*.c")
 add_executable(LoopOver ${SOURCES})

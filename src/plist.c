@@ -84,7 +84,7 @@ bool plist_manager_modify(const plist_manager_t *manager) {
 }
 
 void plist_manager_free(plist_manager_t *manager) {
-    if (manager == nullptr) return;
+    if (manager == nullptr) [[clang::unlikely]] return;
 
     if (manager->resource != nullptr) CFRelease(manager->resource);
     if (manager->properties != nullptr) CFRelease(manager->properties);
