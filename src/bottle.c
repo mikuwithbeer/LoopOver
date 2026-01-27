@@ -5,17 +5,11 @@
 #include <string.h>
 #include <dirent.h>
 
-constexpr int PATH_MAX = 1024;
-constexpr int BUFFER_SIZE = PATH_MAX << 2;
-constexpr int LINES_TO_REMOVE = 5;
-
-constexpr char TARGET_PREFIX[] = "[Software\\\\CodeWeavers\\\\CrossOver\\\\cxoffice]";
-
 bool bottle_modify(const char *path) {
     const auto file = fopen(path, "r");
     if (file == nullptr) return false;
 
-    char temp_path[PATH_MAX] = {};
+    char temp_path[LOOPOVER_BOTTLE_PATH_MAX] = {};
     snprintf(temp_path, sizeof(temp_path), "%s.tmp", path);
 
     const auto temp_file = fopen(temp_path, "w");
@@ -27,16 +21,16 @@ bool bottle_modify(const char *path) {
     auto line_found = false;
     auto skip_lines = 0;
 
-    char buffer[BUFFER_SIZE] = {};
-    while (fgets(buffer, BUFFER_SIZE, file)) {
+    char buffer[LOOPOVER_BOTTLE_BUFFER_SIZE] = {};
+    while (fgets(buffer, LOOPOVER_BOTTLE_BUFFER_SIZE, file)) {
         if (skip_lines > 0) [[clang::unlikely]] {
             skip_lines--;
             continue;
         }
 
-        const auto result = strstr(buffer, TARGET_PREFIX);
+        const auto result = strstr(buffer, LOOPOVER_BOTTLE_LOOKUP);
         if (result != nullptr) [[clang::unlikely]] {
-            skip_lines = LINES_TO_REMOVE;
+            skip_lines = LOOPOVER_BOTTLE_PASS_COUNT;
             line_found = true;
             continue;
         }
@@ -61,7 +55,7 @@ bool bottle_list(const bottle_modify_callback_t callback) {
     const auto home = getenv("HOME");
     if (home == nullptr) return false;
 
-    char bottles_path[PATH_MAX] = {};
+    char bottles_path[LOOPOVER_BOTTLE_PATH_MAX] = {};
     snprintf(bottles_path, sizeof(bottles_path), "%s/Library/Application Support/CrossOver/Bottles", home);
 
     const auto dir = opendir(bottles_path);
@@ -71,7 +65,7 @@ bool bottle_list(const bottle_modify_callback_t callback) {
     while ((entry = readdir(dir)) != nullptr) {
         if (entry->d_name[0] == '.') continue;
 
-        char reg_path[PATH_MAX] = {};
+        char reg_path[LOOPOVER_BOTTLE_PATH_MAX] = {};
         snprintf(reg_path, sizeof(reg_path), "%s/%s/system.reg", bottles_path, entry->d_name);
 
         if (!callback(reg_path)) {
