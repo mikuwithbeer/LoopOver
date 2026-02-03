@@ -17,6 +17,8 @@ constexpr char LOOPOVER_BOTTLE_ERROR[] = "Failed patching the bottle :(";
 
 [[nodiscard]] bool handle_modify(const char *path);
 
+[[nodiscard]] bool execute_step(bool callback, const char *info, const char *error);
+
 int main(void);
 
 #endif

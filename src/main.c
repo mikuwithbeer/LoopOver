@@ -2,8 +2,6 @@
 #include "main.h"
 #include "bottle.h"
 
-static bool execute_step(bool callback, const char *info, const char *error);
-
 int main(void) {
     if (!get_confirmation()) return 0;
 
@@ -42,12 +40,9 @@ bool handle_modify(const char *path) {
     return bottle_modify(path);
 }
 
-static bool execute_step(const bool callback, const char *info, const char *error) {
+bool execute_step(const bool callback, const char *info, const char *error) {
     puts(info);
-
-    if (!callback) {
-        puts(error);
-    }
+    if (!callback) puts(error);
 
     return callback;
 }

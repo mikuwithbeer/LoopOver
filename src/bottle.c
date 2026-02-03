@@ -39,10 +39,13 @@ bool bottle_modify(const char *path) {
     }
 
     fclose(file);
+
+    const bool flush_result = fflush(temp_file) != 0;
     fclose(temp_file);
 
+    if (flush_result) return false;
+
     if (line_found) {
-        if (remove(path) != 0) return false;
         if (rename(temp_path, path) != 0) return false;
     } else {
         remove(temp_path);

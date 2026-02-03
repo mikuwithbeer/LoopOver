@@ -5,11 +5,10 @@ plist_manager_t *plist_manager_new(void) {
 }
 
 bool plist_manager_prepare(plist_manager_t *manager) {
-    char raw_path[PATH_MAX] = {};
-
     const auto home = getenv("HOME");
     if (home == nullptr) return false;
 
+    char raw_path[PATH_MAX] = {};
     snprintf(raw_path, PATH_MAX, "%s/Library/Preferences/com.codeweavers.CrossOver.plist", home);
 
     const auto file_path = CFStringCreateWithCString(kCFAllocatorDefault, raw_path, kCFStringEncodingUTF8);
@@ -32,13 +31,7 @@ bool plist_manager_load(plist_manager_t *manager) {
         &error_code
     );
 
-    if (!status || manager->resource == nullptr) {
-        if (manager->url) {
-            CFRelease(manager->url);
-        }
-
-        return false;
-    }
+    if (!status || manager->resource == nullptr) return false;
 
     CFErrorRef error = nullptr;
     manager->properties = CFPropertyListCreateWithData(
@@ -54,11 +47,13 @@ bool plist_manager_load(plist_manager_t *manager) {
 
 bool plist_manager_modify(const plist_manager_t *manager) {
     const auto yesterday = CFAbsoluteTimeGetCurrent() - 86'400.0;
-    const auto date = CFDateCreate(nullptr, yesterday);
     const auto key = CFSTR("FirstRunDate");
 
-    CFDictionarySetValue(manager->properties, key, date);
-    CFRelease(date);
+    const auto today = CFDateCreate(nullptr, yesterday);
+    if (today == nullptr) return false;
+
+    CFDictionarySetValue(manager->properties, key, today);
+    CFRelease(today);
 
     CFErrorRef error = nullptr;
     const auto output = CFPropertyListCreateData(
@@ -69,7 +64,10 @@ bool plist_manager_modify(const plist_manager_t *manager) {
         &error
     );
 
-    if (error != nullptr) return false;
+    if (output == nullptr) {
+        if (error != nullptr) CFRelease(error);
+        return false;
+    }
 
     SInt32 error_code = 0;
     const bool status = CFURLWriteDataAndPropertiesToResource(
