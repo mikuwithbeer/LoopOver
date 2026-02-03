@@ -1,6 +1,6 @@
-#include "plist.h"
-#include "main.h"
 #include "bottle.h"
+#include "main.h"
+#include "plist.h"
 
 int main(void) {
     if (!get_confirmation()) return 0;

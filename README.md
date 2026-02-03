@@ -1,8 +1,8 @@
 ## LoopOver
 
+![Language](https://img.shields.io/badge/language-C-darkgrey.svg)
 ![License](https://img.shields.io/badge/license-MIT-red.svg)
-![Platform](https://img.shields.io/badge/platform-macOS-green.svg)
-![Language](https://img.shields.io/badge/language-C-blue.svg)
+![Platform](https://img.shields.io/badge/platform-macOS-blue.svg)
 
 
 > [!CAUTION]
@@ -36,7 +36,7 @@ Mark the binary as executable and move it to your `/usr/local/bin` directory:
 
 ```bash
 chmod +x LoopOver
-sudo mv LoopOver /usr/local/bin
+sudo mv LoopOver /usr/local/bin/LoopOver
 ```
 
 You can run from the command line whenever your trial period expires:

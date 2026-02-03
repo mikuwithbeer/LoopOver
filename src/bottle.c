@@ -59,7 +59,7 @@ bool bottle_list(const bottle_modify_callback_t callback) {
     if (home == nullptr) return false;
 
     char bottles_path[LOOPOVER_BOTTLE_PATH_MAX] = {};
-    snprintf(bottles_path, sizeof(bottles_path), "%s/Library/Application Support/CrossOver/Bottles", home);
+    snprintf(bottles_path, LOOPOVER_BOTTLE_PATH_MAX, "%s/Library/Application Support/CrossOver/Bottles", home);
 
     const auto dir = opendir(bottles_path);
     if (dir == nullptr) return false;
@@ -69,7 +69,7 @@ bool bottle_list(const bottle_modify_callback_t callback) {
         if (entry->d_name[0] == '.') continue;
 
         char reg_path[LOOPOVER_BOTTLE_PATH_MAX] = {};
-        snprintf(reg_path, sizeof(reg_path), "%s/%s/system.reg", bottles_path, entry->d_name);
+        snprintf(reg_path, LOOPOVER_BOTTLE_PATH_MAX, "%s/%s/system.reg", bottles_path, entry->d_name);
 
         if (!callback(reg_path)) {
             closedir(dir);
